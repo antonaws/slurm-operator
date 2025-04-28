@@ -80,6 +80,7 @@ slurm:
     # DebugLevel: debug2
     # DebugFlags: []
     ### PURGE ###
+<<<<<<< Updated upstream
     # PurgeEventAfter: 12month
     # PurgeJobAfter: 12month
     # PurgeResvAfter: 2month
@@ -87,6 +88,24 @@ slurm:
     # PurgeSuspendAfter: 1month
     # PurgeTXNAfter: 12month
     # PurgeUsageAfter: 12month
+=======
+    #PurgeEventAfter: 12month
+    #PurgeJobAfter: 12month
+    #PurgeResvAfter: 2month
+    #PurgeStepAfter: 2month
+    #PurgeSuspendAfter: 1month
+    #PurgeTXNAfter: 12month
+    #PurgeUsageAfter: 12month
+    StorageHost: "slurm-mariadb.slurm.svc.cluster.local"
+    StoragePort: "3306"
+    StorageType: "accounting_storage/mysql"
+    StorageUser: "slurm"
+    #StoragePass: "YourSecurePassword"
+    DbdHost: "slurm-accounting-0.slurm-accounting.slurm.svc.cluster.local"
+    DbdAddr: "slurm-accounting-0.slurm-accounting.slurm.svc.cluster.local"
+    DbdPort: "6819"
+    DebugLevel: "debug"
+>>>>>>> Stashed changes
   #
   # -- (map[string]string | map[string][]string)
   # Extra slurm configuration lines to append to `slurm.conf`, represetned as a string or a map.
@@ -96,6 +115,7 @@ slurm:
     # MinJobAge: 2
     # MaxNodeCount: 1024
     ### LOGGING ###
+<<<<<<< Updated upstream
     # SlurmctldDebug: debug2
     # SlurmSchedLogLevel: 1
     # SlurmdDebug: debug2
@@ -103,6 +123,20 @@ slurm:
     ### PLUGINS & PARAMETERS ###
     # SchedulerParameters:
     #   - defer_batch
+=======
+    SlurmctldDebug: info
+    SlurmSchedLogLevel: 1
+    SlurmdDebug: info
+    DebugFlags: []
+    LogTimeFormat:
+      - iso8601_ms
+      - format_stderr
+    #ClusterName: "kubernetes"
+    SlurmctldHost: "slurm-controller-0.slurm.svc.cluster.local"
+    AccountingStorageHost: "slurm-accounting.slurm.svc.cluster.local"
+    AccountingStoragePort: "6819"
+    AccountingStorageType: "accounting_storage/slurmdbd"
+>>>>>>> Stashed changes
   #
   # -- (map[string]string)
   # Optional raw Slurm configuration files, as a map.
@@ -166,11 +200,12 @@ authcred:
     #
     # -- (string)
     # Set the image repository to use.
-    repository: ghcr.io/slinkyproject/sackd
+    repository: 058264135704.dkr.ecr.us-east-2.amazonaws.com/sackd
     #
     # -- (string)
     # Set the image tag to use.
-    tag: 24.11-ubuntu24.04
+    tag: "latest"
+    pullPolicy: Always
   #
   # -- (object)
   # Set container resource requests and limits for Kubernetes Pod scheduling.
@@ -196,11 +231,12 @@ controller:
     #
     # -- (string)
     # Set the image repository to use.
-    repository: ghcr.io/slinkyproject/slurmctld
+    repository: 058264135704.dkr.ecr.us-east-2.amazonaws.com/slurmctld
     #
     # -- (string)
     # Set the image tag to use.
-    tag: 24.11-ubuntu24.04
+    tag: "latest"
+    pullPolicy: Always
   #
   # -- (object)
   # The controller service configuration.
@@ -225,9 +261,16 @@ controller:
   priorityClassName: ""
   #
   # -- (object)
-  # Set affinity for Kubernetes Pod scheduling.
-  # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
-  affinity: {}
+  # Set affinity for Kubernetes...
+  affinity:  # ← FIXED INDENTATION HERE
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: NotIn
+            values:
+            - ip-100-64-244-93.ec2.internal
   #
   # -- (list)
   # Configure pod tolerations.
@@ -306,11 +349,12 @@ login:
     #
     # -- (string)
     # Set the image repository to use.
-    repository: ghcr.io/slinkyproject/login
+    repository: 058264135704.dkr.ecr.us-east-2.amazonaws.com/login
     #
     # -- (string)
     # Set the image tag to use.
-    tag: 24.11-ubuntu24.04
+    tag: "latest"
+    pullPolicy: Always
   #
   # -- (object)
   # The login service configuration.
@@ -412,7 +456,15 @@ login:
   # -- (object)
   # Set affinity for Kubernetes Pod scheduling.
   # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: NotIn
+            values:
+            - ip-100-64-244-93.ec2.internal
   #
   # -- (list)
   # Configure pod tolerations.
@@ -444,11 +496,17 @@ compute:
     #
     # -- (string)
     # Set the image repository to use.
-    repository: ghcr.io/slinkyproject/slurmd
+    repository: 058264135704.dkr.ecr.us-east-2.amazonaws.com/slurmd
     #
     # -- (string)
     # Set the image tag to use.
+<<<<<<< Updated upstream
     tag: 24.11-ubuntu24.04
+=======
+    # @default -- The Release appVersion.
+    tag: "latest"
+    pullPolicy: Always
+>>>>>>> Stashed changes
   #
   # -- (list)
   # Slurm NodeSets by object list.
@@ -501,7 +559,15 @@ compute:
       #
       # -- (object)
       # Set affinity for Kubernetes Pod scheduling.
-      affinity: {}
+      affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: NotIn
+              values:
+              - ip-100-64-244-93.ec2.internal
         # nodeAffinity:
         #   requiredDuringSchedulingIgnoredDuringExecution:
         #     nodeSelectorTerms:
@@ -663,6 +729,18 @@ compute:
 #
 # Slurm accounting (slurmdbd) configurations.
 accounting:
+  # Add hostname override
+  hostname: "slurm-accounting.slurm.svc.cluster.local"
+  subdomain: "slurm"
+  dnsPolicy: ClusterFirst
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "5"
+    searches:
+      - slurm.svc.cluster.local
+      - svc.cluster.local
+      - cluster.local
   #
   # -- (bool)
   # Enables accounting services.
@@ -677,16 +755,25 @@ accounting:
     #
     # -- (string)
     # Set the image repository to use.
-    repository: ghcr.io/slinkyproject/slurmdbd
+    repository: 058264135704.dkr.ecr.us-east-2.amazonaws.com/slurmdbd
     #
     # -- (string)
     # Set the image tag to use.
-    tag: 24.11-ubuntu24.04
+    tag: "latest"
+    pullPolicy: Always
   #
   # -- (object)
   # Set affinity for Kubernetes Pod scheduling.
   # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
-  affinity: {}
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: NotIn
+              values:
+              - ip-100-64-244-93.ec2.internal
   #
   # -- (list)
   # Configure pod tolerations.
@@ -725,8 +812,11 @@ accounting:
 mariadb:
   enabled: true
   auth:
-    username: slurm
-    database: slurm_acct_db
+    database: "slurm_acct_db"
+    username: "slurm"
+    #password: "YourSecurePassword"  # Must match StoragePass above
+    rootPassword: "YourRootPassword"
+
   tls:
     enabled: false
   tde:
@@ -803,7 +893,15 @@ mariadb:
     enabled: false
     serviceMonitor:
       enabled: false
-  affinity: {}
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: NotIn
+              values:
+              - ip-100-64-244-93.ec2.internal
   resources: {}
 
 #
@@ -827,16 +925,18 @@ restapi:
     #
     # -- (string)
     # Set the image repository to use.
-    repository: ghcr.io/slinkyproject/slurmrestd
+    repository: 058264135704.dkr.ecr.us-east-2.amazonaws.com/slurmrestd
     #
     # -- (string)
     # Set the image tag to use.
-    tag: 24.11-ubuntu24.04
+    tag: "latest"
+    pullPolicy: Always
   #
   # -- (object)
   # The restapi service configuration.
   # Ref: https://kubernetes.io/docs/concepts/services-networking/service/
-  service: {}
+  service:
+    type: ClusterIP
     # type: LoadBalancer
     # externalIPs: []
     # externalName: my.slurmrestd.example.com
@@ -858,7 +958,15 @@ restapi:
   # -- (object)
   # Set affinity for Kubernetes Pod scheduling.
   # Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
-  affinity: {}
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: NotIn
+            values:
+            - ip-100-64-244-93.ec2.internal
   #
   # -- (list)
   # Configure pod tolerations.
@@ -879,8 +987,12 @@ restapi:
 #
 # `slurm-exporter` subchart configurations.
 # Ref: https://github.com/SlinkyProject/slurm-exporter/-/blob/main/helm/slurm-exporter/values.yaml
+# Add under slurm-exporter section
 slurm-exporter:
   enabled: true
   exporter:
     enabled: true
     secretName: "slurm-token-exporter"
+    jwt:
+      # Add this section
+      token: "WFV6eGc2bGJNMVYvUXVIN245d2hMcWJTZGpma1V0bDI3ai9hZjlxSzllMD0="  # Get this from: kubectl get secret -n slurm slurm-token -o jsonpath='{.data.token}'

@@ -43,19 +43,22 @@ operator:
   #
   # -- (string)
   # Set the image pull policy.
-  imagePullPolicy: IfNotPresent
+  imagePullPolicy: Always
   #
   # Image configurations.
   image:
     #
     # -- (string)
     # Sets the image repository to use.
-    repository: ghcr.io/slinkyproject/slurm-operator
+    repository: 058264135704.dkr.ecr.us-east-2.amazonaws.com/slurm-operator
     #
     # -- (string)
     # Sets the image tag to use.
     # @default -- The chart Version.
-    tag: ""
+    tag: "latest"
+    pullPolicy: Always
+
+   
   #
   # Service account configurations.
   serviceAccount:
@@ -115,19 +118,21 @@ webhook:
   #
   # -- (string)
   # Set the image pull policy.
-  imagePullPolicy: IfNotPresent
+  imagePullPolicy: Always
   #
   # Image configurations.
   image:
     #
     # -- (string)
     # Sets the image repository to use.
-    repository: ghcr.io/slinkyproject/slurm-operator-webhook
+    repository: 058264135704.dkr.ecr.us-east-2.amazonaws.com/slurm-operator-webhook
     #
     # -- (string)
     # Sets the image tag to use.
     # @default -- The chart Version.
-    tag: ""
+    tag: "latest"
+    pullPolicy: Always
+
   #
   # Service account configurations.
   serviceAccount:
